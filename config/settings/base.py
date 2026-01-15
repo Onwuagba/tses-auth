@@ -115,6 +115,7 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "TSES OTP Auth Service",
     "DESCRIPTION": "Email-based OTP authentication service",
     "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
