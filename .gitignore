@@ -48,3 +48,4 @@ var/
 wheels/
 *.egg-info/
 .installed.cfg
+test_basic.py
