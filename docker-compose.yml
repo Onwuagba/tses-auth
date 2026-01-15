@@ -27,6 +27,10 @@ services:
   celery_worker:
     build: .
     command: celery -A config worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
     depends_on:
       - redis
       - postgres
