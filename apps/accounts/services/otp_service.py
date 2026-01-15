@@ -16,6 +16,7 @@ class OTPService:
         """Handle OTP request with rate limiting"""
         email_allowed, email_retry_after = check_rate_limit_email(email)
         if not email_allowed:
+            write_audit_log.delay('OTP_REQUESTED', email, ip_address, user_agent, {'status': 'rate_limited', 'reason': 'email'})
             return {
                 'success': False,
                 'error': 'Too many OTP requests for this email',
@@ -25,6 +26,7 @@ class OTPService:
         
         ip_allowed, ip_retry_after = check_rate_limit_ip(ip_address)
         if not ip_allowed:
+            write_audit_log.delay('OTP_REQUESTED', email, ip_address, user_agent, {'status': 'rate_limited', 'reason': 'ip'})
             return {
                 'success': False,
                 'error': 'Too many OTP requests from this IP',

@@ -1,10 +1,11 @@
 from celery import shared_task
+from ..utils.email_utils import mask_email
 
 @shared_task
 def send_otp_email(email, otp):
     """Send OTP email (console output for demo)"""
     print(f"=== OTP EMAIL ===")
-    print(f"To: {email}")
+    print(f"To: {mask_email(email)}")
     print(f"Subject: Your OTP Code")
     print(f"Your OTP code is: {otp}")
     print(f"This code will expire in 5 minutes.")
