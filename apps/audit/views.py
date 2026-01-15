@@ -9,16 +9,11 @@ class AuditLogListView(generics.ListAPIView):
     serializer_class = AuditLogSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_class = AuditLogFilter
+    http_method_names = ['get']
     
     @extend_schema(
         summary="List audit logs",
-        description="Get paginated list of audit logs with filtering support",
-        parameters=[
-            {'name': 'email', 'in': 'query', 'description': 'Filter by email'},
-            {'name': 'event', 'in': 'query', 'description': 'Filter by event type'},
-            {'name': 'from_date', 'in': 'query', 'description': 'Filter from date (ISO format)'},
-            {'name': 'to_date', 'in': 'query', 'description': 'Filter to date (ISO format)'},
-        ]
+        description="Get paginated list of audit logs with filtering support"
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)

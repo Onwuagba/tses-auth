@@ -14,7 +14,6 @@ class OTPService:
     @staticmethod
     def request_otp(email, ip_address, user_agent):
         """Handle OTP request with rate limiting"""
-        # Check rate limits
         email_allowed, email_retry_after = check_rate_limit_email(email)
         if not email_allowed:
             return {
@@ -33,11 +32,9 @@ class OTPService:
                 'status_code': 429
             }
         
-        # Generate and store OTP
         otp = generate_otp()
         store_otp(email, otp)
         
-        # Send email and audit log asynchronously
         send_otp_email.delay(email, otp)
         write_audit_log.delay('OTP_REQUESTED', email, ip_address, user_agent)
         
@@ -51,7 +48,6 @@ class OTPService:
     @staticmethod
     def verify_otp(email, otp, ip_address, user_agent):
         """Handle OTP verification"""
-        # Check if locked
         locked, unlock_eta = is_locked(email)
         if locked:
             write_audit_log.delay('OTP_LOCKED', email, ip_address, user_agent)
@@ -62,7 +58,6 @@ class OTPService:
                 'status_code': 423
             }
         
-        # Get stored OTP
         stored_otp = get_otp(email)
         if not stored_otp:
             write_audit_log.delay('OTP_FAILED', email, ip_address, user_agent, {'reason': 'expired'})
@@ -72,7 +67,6 @@ class OTPService:
                 'status_code': 400
             }
         
-        # Verify OTP
         if stored_otp != otp:
             attempts, locked, unlock_eta = track_failed_attempt(email)
             if locked:
@@ -95,13 +89,11 @@ class OTPService:
         delete_otp(email)
         clear_failed_attempts(email)
         
-        # Create or get user
         user, created = User.objects.get_or_create(
             email=email,
             defaults={'username': email}
         )
         
-        # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
         
