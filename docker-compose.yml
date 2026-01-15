@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.local
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tses
+      POSTGRES_USER: tses
+      POSTGRES_PASSWORD: tses
+
+  redis:
+    image: redis:7
+
+  celery_worker:
+    build: .
+    command: celery -A config worker -l info
+    depends_on:
+      - redis
+      - postgres
